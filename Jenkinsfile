@@ -109,6 +109,35 @@ pipeline {
             }
         }
 
+        stage('Check and Install kubectl') {
+            steps {
+                script {
+                    // Check if kubectl is installed
+                    def kubectlInstalled = sh(script: 'which kubectl', returnStatus: true) == 0
+
+                    if (!kubectlInstalled) {
+                        echo "kubectl not found. Installing kubectl..."
+
+                        // Install necessary packages
+                        sh 'sudo apt-get update'
+                        sh 'sudo apt-get install -y curl apt-transport-https'
+
+                        // Download and install kubectl
+                        sh '''
+                        curl -LO "https://dl.k8s.io/release/v1.26.0/bin/linux/amd64/kubectl"
+                        chmod +x ./kubectl
+                        sudo mv ./kubectl /usr/local/bin/kubectl
+                        '''
+
+                        // Verify installation
+                        sh 'kubectl version --client'
+                    } else {
+                        echo "kubectl is already installed."
+                    }
+                }
+            }
+        }
+
         stage('kubectl install') {
             steps {
                 script {
