@@ -84,6 +84,23 @@ pipeline {
                 script {
                     if (params.ADD_PYTHON_PROJECT) {
                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]){
+                            dir('terraform') {
+                                sh 'echo "=================connecting kubectl with aws =================="'
+                                // aws eks update-kubeconfig --region ${env.AWS_REGION} --name ${env.EKS_CLUSTER_NAME}
+                                aws eks update-kubeconfig --region us-east-2 --name education-eks-Qg7sWMk5
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('add-python-project') {
+            steps {
+                script {
+                    if (params.ADD_PYTHON_PROJECT) {
+                       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]){
                             dir('application') {
                                 sh 'echo "=================installing application to run=================="'
                                 sh 'kubectl apply -f mysql-configmap.yml'
