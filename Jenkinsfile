@@ -87,8 +87,7 @@ pipeline {
                             dir('terraform') {
                                 sh 'echo "=================connecting kubectl with aws =================="'
                                 // aws eks update-kubeconfig --region ${env.AWS_REGION} --name ${env.EKS_CLUSTER_NAME}
-                                aws eks update-kubeconfig --region us-east-2 --name education-eks-Qg7sWMk5
-
+                                sh 'aws eks update-kubeconfig --region us-east-2 --name education-eks-Qg7sWMk5'
                             }
                         }
                     }
