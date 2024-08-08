@@ -79,6 +79,36 @@ pipeline {
             }
         }
 
+        stage('Check and Install AWS CLI') {
+            steps {
+                script {
+                    // Check if aws CLI is installed
+                    def awsCliInstalled = sh(script: 'which aws', returnStatus: true) == 0
+
+                    if (!awsCliInstalled) {
+                        echo "AWS CLI not found. Installing AWS CLI..."
+
+                        // Install necessary packages
+                        sh 'sudo apt-get update'
+                        sh 'sudo apt-get install -y curl unzip'
+
+                        // Download and install AWS CLI
+                        sh '''
+                        curl "https://d1uj6qtbmh3dt5.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscli-exe-linux-x86_64.zip"
+                        unzip awscli-exe-linux-x86_64.zip
+                        sudo ./aws/install
+                        rm -rf awscli-exe-linux-x86_64.zip aws
+                        '''
+
+                        // Verify installation
+                        sh 'aws --version'
+                    } else {
+                        echo "AWS CLI is already installed."
+                    }
+                }
+            }
+        }
+
         stage('kubectl install') {
             steps {
                 script {
