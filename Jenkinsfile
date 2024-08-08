@@ -79,7 +79,7 @@ pipeline {
             }
         }
 
-        stage('add-python-project') {
+        stage('kubectl install') {
             steps {
                 script {
                     if (params.ADD_PYTHON_PROJECT) {
