@@ -5,6 +5,8 @@ pipeline {
             booleanParam(name: 'PLAN_TERRAFORM', defaultValue: false, description: 'Check to plan Terraform changes')
             booleanParam(name: 'APPLY_TERRAFORM', defaultValue: false, description: 'Check to apply Terraform changes')
             booleanParam(name: 'DESTROY_TERRAFORM', defaultValue: false, description: 'Check to apply Terraform changes')
+            booleanParam(name: 'ADD_PYTHON_PROJECT', defaultValue: false, description: 'Check to apply python_project')
+
     }
 
     stages {
@@ -70,6 +72,27 @@ pipeline {
                             dir('terraform') {
                                 sh 'echo "=================Terraform Destroy=================="'
                                 sh 'terraform destroy -auto-approve'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('add-python-project') {
+            steps {
+                script {
+                    if (params.ADD_PYTHON_PROJECT) {
+                       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]){
+                            dir('application') {
+                                sh 'echo "=================installing application to run=================="'
+                                sh 'kubectl apply -f mysql-configmap.yml'
+                                sh 'kubectl apply -f mysql-secrets.yml'
+                                sh 'kubectl apply -f mysql-deployment.yml'
+                                sh 'kubectl apply -f mysql-svc.yml'
+                                sh 'kubectl apply -f two-tier-app-deployment.yml'
+                                sh 'kubectl apply -f two-tier-app-svc.yml'
+                                
                             }
                         }
                     }
